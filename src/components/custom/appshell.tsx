@@ -23,12 +23,17 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
     >
         {/** content */}
         <main
-            className="flex min-h-screen w-full flex-col lg:pl-72 items-center justify-start pt-20 bg-gradient-to-b from-[#2e026d] to-[#15162c]"
+            className="flex min-h-screen w-full flex-col lg:pl-72 items-center justify-center pt-20 bg-gradient-to-br from-gray-900 to-gray-800 "
         >
             <ScrollArea
                 className="w-full h-full px-2 lg:pl-4"
             >
-                {children}
+                <div
+                    className="flex flex-col items-center justify-center"
+                >
+                    {children}
+                </div>
+
             </ScrollArea>
         </main>
         {/** sidebar */}

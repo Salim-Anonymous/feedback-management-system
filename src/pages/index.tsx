@@ -3,6 +3,7 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "@/utils/api";
+import Image from "next/image";
 
 const Home: NextPage = (_props) => {
   const { status } = useSession();
@@ -16,13 +17,16 @@ const Home: NextPage = (_props) => {
       <Head>
         <title>Feedback Management System</title>
         <meta name="description" content="Getting stated" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/fav.png" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white text-center sm:text-[5rem]">
-            Feedback<span className="text-[hsl(280,100%,70%)]"> Management</span> System
-          </h1>
+      <main id="bgcst" className="flex min-h-screen px-3 flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        <div className="container rounded-xl bg-black/30 backdrop-filter backdrop-blur-sm flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+          <Image
+            src="/whitelogo.svg"
+            alt="logo"
+            width={700}
+            height={200}
+          />
           <div className="flex flex-col items-center gap-2">
             <AuthShowcase />
           </div>
@@ -49,7 +53,7 @@ const AuthShowcase: React.FC = () => {
         {secretMessage && <span> - {secretMessage}</span>}
       </p>
       <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+        className="rounded-full bg-white/50 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
         onClick={sessionData ? () => void signOut() : () => void signIn()}
       >
         {sessionData ? "Sign out" : "Sign in"}

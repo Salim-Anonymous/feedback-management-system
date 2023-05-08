@@ -12,6 +12,9 @@ import {
 } from "../ui/avatar"
 import { Separator } from "../ui/separator"
 import Image from "next/image"
+import { Button } from "../ui/button"
+import { Toggle } from "../ui/toggle"
+import { AspectRatio } from "../ui/aspect-ratio"
 
 const Post = ({ post }: {
     post: {
@@ -21,7 +24,7 @@ const Post = ({ post }: {
 }) => {
     return (
         <div
-            className="flex flex-col w-full items-start justify-start bg-white/10 text-white rounded-xl px-4 py-4"
+            className="flex flex-col my-4 w-full md:w-2/3 items-start justify-start bg-black/50 text-white rounded-xl px-4 py-4"
         >
             <div
                 className="flex flex-row w-full items-center justify-start gap-4"
@@ -82,7 +85,8 @@ const Post = ({ post }: {
                 </p>
             </div>
             {/** Images display */}
-            <div
+            <AspectRatio
+                ratio={16 / 12}
                 className="flex flex-row w-full items-center justify-start gap-2 my-4"
             >
                 {/**random image from images.unsplash.it */}
@@ -90,42 +94,71 @@ const Post = ({ post }: {
                     src="https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200"
                     alt="random"
                     width={1080}
+                    priority
                     height={720}
                     className="rounded-xl"
                 />
-            </div>
+            </AspectRatio>
             <Separator
-                className="w-full my-4"
+                className="w-full my-1"
             />
             <div
-                className="flex flex-row w-full items-center justify-start gap-2 my-4"
+                className="flex flex-row w-full items-center justify-evenly gap-4 my-1"
             >
-                <div
-                    className="flex flex-row w-full items-center justify-start gap-2"
+                <Toggle
+                    className="flex flex-row w-full items-center justify-center gap-2"
                 >
                     <ArrowUpIcon
                         className="w-4 h-4"
                     />
                     <p
-                        className="text-sm"
+                        className="text-xs"
                     >
                         1.2k
                     </p>
-                </div>
-                <div
-                    className="flex flex-row w-full items-center justify-start gap-2"
+                </Toggle>
+                <Toggle
+                    className="flex flex-row w-full items-center justify-center gap-2"
                 >
                     <ArrowDownIcon
                         className="w-4 h-4"
                     />
                     <p
-                        className="text-sm"
+                        className="text-xs"
                     >
                         1.2k
                     </p>
-                </div>
-                <div
-                    className="flex flex-row w-full items-center justify-start gap-2"
+                </Toggle>
+                <Toggle
+                    className="flex flex-row w-full items-center justify-center gap-2"
+                >
+                    <HeartIcon
+                        className="w-4 h-4"
+                    />
+                    <p
+                        className="text-xs"
+                    >
+                        1.2k
+                    </p>
+                </Toggle>
+            </div>
+            <div
+                className="flex flex-row w-full items-center justify-evenly gap-2 my-4"
+            >
+                <Button
+                    className="flex flex-row w-1/2 bg-white/30 items-center justify-center gap-2"
+                >
+                    <MessageCircle
+                        className="w-4 h-4"
+                    />
+                    <p
+                        className="text-xs"
+                    >
+                        1.2k comments
+                    </p>
+                </Button>
+                <Button
+                    className="flex flex-row w-1/2 bg-red-500 items-center justify-start gap-2"
                 >
                     <FlagIcon
                         className="w-4 h-4"
@@ -133,37 +166,10 @@ const Post = ({ post }: {
                     <p
                         className="text-sm"
                     >
-                        5
+                        5 reports
                     </p>
-                </div>
-                <div
-                    className="flex flex-row w-full items-center justify-start gap-2"
-                >
-                    <HeartIcon
-                        className="w-4 h-4"
-                    />
-                    <p
-                        className="text-sm"
-                    >
-                        1.2k
-                    </p>
-                </div>
-                <div
-                    className="flex flex-row w-full items-center justify-start gap-2"
-                >
-                    <MessageCircle
-                        className="w-4 h-4"
-                    />
-                    <p
-
-                        className="text-sm"
-                    >
-                        1.2k
-                    </p>
-                </div>
+                </Button>
             </div>
-
-
         </div>
     )
 }
