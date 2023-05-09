@@ -15,6 +15,7 @@ import Image from "next/image"
 import { Button } from "../ui/button"
 import { Toggle } from "../ui/toggle"
 import { AspectRatio } from "../ui/aspect-ratio"
+import CommentsDialog from "./comment"
 
 const Post = ({ post }: {
     post: {
@@ -145,18 +146,7 @@ const Post = ({ post }: {
             <div
                 className="flex flex-row w-full items-center justify-evenly gap-2 my-4"
             >
-                <Button
-                    className="flex flex-row w-1/2 bg-white/30 items-center justify-center gap-2"
-                >
-                    <MessageCircle
-                        className="w-4 h-4"
-                    />
-                    <p
-                        className="text-xs"
-                    >
-                        1.2k comments
-                    </p>
-                </Button>
+                <CommentsDialog id="sadsad" />
                 <Button
                     className="flex flex-row w-1/2 bg-red-500 items-center justify-start gap-2"
                 >

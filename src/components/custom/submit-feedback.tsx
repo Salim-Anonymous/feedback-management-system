@@ -14,6 +14,8 @@ import { PlusCircleIcon } from "lucide-react"
 import { Textarea } from "../ui/textarea"
 import { type ChangeEvent, useState } from "react"
 import { Separator } from "@radix-ui/react-separator"
+import FileUpload from "./file-upload"
+import { ScrollArea } from "@radix-ui/react-scroll-area"
 
 export default function SubmitFeedback() {
     const [fileList, setFileList] = useState<FileList | null>(null);
@@ -54,39 +56,28 @@ export default function SubmitFeedback() {
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Create Feedback</DialogTitle>
-                    <DialogDescription>
-                        Make sure to keep the post friendly and respectful.
-                    </DialogDescription>
-                </DialogHeader>
-                <Separator />
-                <div className="grid gap-4 py-4">
-                    <div className="grid w-full max-w-sm items-center gap-1.5">
-                        <Label htmlFor="Title">Subject</Label>
-                        <Input type="text" id="title" placeholder="Title" />
+                <ScrollArea className="h-full gap-2">
+                    <DialogHeader>
+                        <DialogTitle>Create Feedback</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                            <Label htmlFor="Title">Subject</Label>
+                            <Input type="text" id="title" placeholder="Title" />
+                        </div>
                     </div>
-                </div>
-                <div className="grid gap-4 py-4">
-                    <div className="grid w-full max-w-sm items-center gap-1.5">
-                        <Label htmlFor="desc">Description</Label>
-                        <Textarea placeholder="Describe your feedback here." />
+                    <div className="grid gap-4 py-4">
+                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                            <Label htmlFor="desc">Description</Label>
+                            <Textarea placeholder="Describe your feedback here." />
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <input type="file" onChange={handleFileChange} multiple />
-
-                    <ul>
-                        {files.map((file, i) => (
-                            <li key={i}>
-                                {file.name} - {file.type}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                    <FileUpload />
+                </ScrollArea>
                 <DialogFooter>
                     <Button type="submit">Save changes</Button>
                 </DialogFooter>
+
             </DialogContent>
         </Dialog>
     )
