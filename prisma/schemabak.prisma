@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model feedback {
+  id          String       @id
+  number      Int          @unique(map: "Posts_number_key") @default(autoincrement())
+  title       String
+  description String
+  likes       Int          @default(0)
+  upvotes     Int          @default(0)
+  downvotes   Int          @default(0)
+  author      String       @default("Anonymous")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime
+  published   Boolean      @default(false)
+  comments    comment[]
+  postimages  image[]
+  category    category[]
+  reports     report[]
+}
+
+model comment {
+  id        String   @id
+  message   String
+  image     String?
+  author    String   @default("Anonymous")
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  published Boolean  @default(false)
+  postId    String
+  feedback     feedback    @relation(fields: [postId], references: [id], map: "Comments_postId_fkey")
+
+  @@index([postId], map: "Comments_postId_fkey")
+}
+
+model image {
+  id     String @id
+  image  String
+  postId String
+  posts  feedback  @relation(fields: [postId], references: [id], map: "PostImages_postId_fkey")
+
+  @@index([postId], map: "PostImages_postId_fkey")
+}
+
+model category{
+  id          String       @id
+  name        String       @unique(map: "Category_name_key")
+  description String
+  feedback    feedback[]
+}
+
+model notification{
+  id          String       @id
+  title       String
+  description String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime
+  published   Boolean      @default(false)
+}
+
+model report{
+  id          String       @id
+  title       String
+  description String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime
+  published   Boolean      @default(false)
+  feedback    feedback[]
+}
+// ------------------------ Donot Touch--------------------------------------------
+model account {
+  id                String  @id
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              user    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_fkey")
+
+  @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
+  @@index([userId], map: "Account_userId_fkey")
+}
+
+model session {
+  id           String   @id
+  sessionToken String   @unique(map: "Session_sessionToken_key")
+  userId       String
+  expires      DateTime
+  user         user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_fkey")
+
+  @@index([userId], map: "Session_userId_fkey")
+}
+
+model user {
+  id            String    @id
+  name          String?
+  email         String?   @unique(map: "User_email_key")
+  emailVerified DateTime?
+  image         String?
+  account       account[]
+  session       session[]
+}
+
+model verificationtoken {
+  identifier String
+  token      String   @unique(map: "VerificationToken_token_key")
+  expires    DateTime
+
+  @@unique([identifier, token], map: "VerificationToken_identifier_token_key")
+}
