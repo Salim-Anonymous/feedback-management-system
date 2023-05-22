@@ -1,4 +1,4 @@
-import { PlusCircleIcon } from "lucide-react";
+import { Airplay, PlaneIcon, PlusCircleIcon, SendIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
@@ -17,7 +17,7 @@ const CommentsDialog: React.FC<CommentsProps> = ({ id }) => {
         <Dialog>
             <DialogTrigger asChild>
                 <Button
-                    className="flex flex-row w-1/2 bg-white/30 items-center justify-center gap-2"
+                    className="flex flex-row w-1/2 items-center justify-center gap-2"
                 >
                     <MessageCircle
                         className="w-4 h-4"
@@ -52,15 +52,24 @@ const CommentsDialog: React.FC<CommentsProps> = ({ id }) => {
                 </ScrollArea>
                 <DialogFooter>
                     <div
-                        className="flex flex-col w-full items-start justify-start gap-2"
+                        className="flex w-full items-start justify-start gap-2"
                     >
-                        <div className="flex flex-row gap-2">
-                            <Label>Comment</Label>
-                            <Textarea
-                                className="w-full"
-                                placeholder="Comment"
+                        <Textarea
+                            className="w-2/3 h-12"
+                            placeholder="Add a comment"
+                        />
+                        <Button
+                            className="flex flex-row items-center justify-center gap-2"
+                        >
+                            <SendIcon
+                                className="w-4 h-4"
                             />
-                        </div>
+                            <p
+                                className="text-xs"
+                            >
+                                comment
+                            </p>
+                        </Button>
                     </div>
 
                 </DialogFooter>

@@ -69,7 +69,7 @@ const Sidebar = ({
     ]
 
     return <aside
-        className={`fixed top-0 left-0 w-72 py-6 lg:pt-20 px-6 h-screen flex flex-col items-start justify-start text-white bg-black/30 backdrop-filter backdrop-blur-lg transition-all ease-in-out duration-300 z-50 lg:z-0 ${open ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed top-0 left-0 w-72 py-6 lg:pt-20 px-6 h-screen flex flex-col items-start border border-l-black justify-start bg-white dark:text-white dark:bg-black/30 transition-all ease-in-out duration-300 z-50 lg:z-0 ${open ? "translate-x-0" : "-translate-x-full"}`}
     >
         {
             isMobileOrTablet && <Button

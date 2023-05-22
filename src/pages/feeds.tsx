@@ -4,11 +4,11 @@ import { useSession } from "next-auth/react";
 import AppShell from "@/components/custom/appshell";
 import Post from "@/components/custom/post";
 import InitialPageLoading from "@/components/custom/inital-page-loading";
-import React from "react";
+import {api} from "@/utils/api";
 
 const Feeds: NextPage = (_props) => {
-
-    const { status } = useSession();
+    const {data:feedbacks} = api.feedback.getAll.useQuery({text:""});
+    const { status} = useSession();
     if (status == "loading") return <InitialPageLoading />;
     if (status === "unauthenticated") location.href = "/";
 
@@ -20,40 +20,20 @@ const Feeds: NextPage = (_props) => {
                 <link rel="icon" href="/fav.png" />
             </Head>
             <AppShell>
-
-                <Post
-                    post={
-                        {
-                            title: "Hello World",
-                            body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum."
-                        }
-                    }
-                />
-                <Post
-                    post={
-                        {
-                            title: "Hello World",
-                            body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum."
-                        }
-                    }
-                />
-                <Post
-                    post={
-                        {
-                            title: "Hello World",
-                            body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum."
-                        }
-                    }
-                />
-                <Post
-                    post={
-                        {
-                            title: "Hello World",
-                            body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum."
-                        }
-                    }
-                />
-
+                {
+                    feedbacks?.map((feedback) => {
+                        console.log(feedback)
+                        return <Post
+                            key={feedback.id}
+                            time={feedback.createdAt}
+                            subject={feedback.subject}
+                            description={feedback.description}
+                            number={feedback.number}
+                            status={feedback.status}
+                            id={feedback.id}
+                        />
+                    })
+                }
             </AppShell>
         </>
     );

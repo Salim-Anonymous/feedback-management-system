@@ -16,16 +16,40 @@ import { Button } from "../ui/button"
 import { Toggle } from "../ui/toggle"
 import { AspectRatio } from "../ui/aspect-ratio"
 import CommentsDialog from "./comment"
+import {api} from "@/utils/api";
 
-const Post = ({ post }: {
-    post: {
-        title: string,
-        body: string
+type Feedback = {
+    avatar?: string | undefined,
+    name?: string | null,
+    time: Date,
+    subject: string,
+    description?: string|null,
+    number: bigint,
+    image?: string[]|null,
+    status: string,
+    id: string
+}
+const Post = ({
+    avatar="https://avatars.githubusercontent.com/u/25105806?v=4",
+    name="Anonymous",
+    time,
+    subject,
+    description,
+    number,
+    status,
+    id
+}: Feedback) => {
+
+    const {data:images,isLoading:imageLoading} = api.image.getImagesForFeedback.useQuery({feedbackId: id});
+
+    const upvote = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault()
+
     }
-}) => {
+
     return (
         <div
-            className="flex flex-col my-4 w-full md:w-2/3 items-start justify-start bg-black/50 text-white rounded-xl px-4 py-4"
+            className="flex flex-col my-4 w-full md:w-2/3 items-start justify-start shadow-md border border-1 border-gray-400 dark:bg-black/50 dark:text-white rounded-xl px-4 py-4"
         >
             <div
                 className="flex flex-row w-full items-center justify-start gap-4"
@@ -35,13 +59,13 @@ const Post = ({ post }: {
                 >
                     <AvatarImage
                         className="w-12 h-12"
-                        src="https://avatars.githubusercontent.com/u/25105806?v=4"
+                        src={avatar}
                         alt="avatar"
                     />
                     <AvatarFallback
                         className="w-12 h-12"
                     >
-                        SN
+                        {name != null ? name[0] : "A"}
                     </AvatarFallback>
                 </Avatar>
                 <div
@@ -53,18 +77,19 @@ const Post = ({ post }: {
                         <p
                             className="text-sm font-semibold"
                         >
-                            Surya Narendran
+                            {name}
                         </p>
                         <p
                             className="text-xs text-gray-400"
                         >
-                            2 hours ago
+                            {Date.now() - time.getTime() > 86400000 ? `${Math.floor((Date.now() - time.getTime()) / 86400000)} days ago` : `${Math.floor((Date.now() - time.getTime()) / 3600000)} hours ago`}
                         </p>
                     </div>
                     <p
-                        className="text-sm"
+                        className="text-sm flex gap-4"
                     >
-                        #000002
+                        #{number.toString()}
+                        {status === "OPEN" ? <span className="text-green-500">Open</span> : <span className="text-red-500">Closed</span>}
                     </p>
                 </div>
             </div>
@@ -77,29 +102,34 @@ const Post = ({ post }: {
                 <p
                     className="text-lg font-semibold"
                 >
-                    {post.title}
+                    {subject}
                 </p>
                 <p
                     className="text-sm"
                 >
-                    {post.body}
+                    {description}
                 </p>
             </div>
             {/** Images display */}
-            <AspectRatio
-                ratio={16 / 12}
-                className="flex flex-row w-full items-center justify-start gap-2 my-4"
-            >
-                {/**random image from images.unsplash.it */}
-                <Image
-                    src="https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200"
-                    alt="random"
-                    width={1080}
-                    priority
-                    height={720}
-                    className="rounded-xl"
-                />
-            </AspectRatio>
+            {
+                images ? "" :
+                    imageLoading ?<p>Loading</p>:(
+                    <AspectRatio
+                        ratio={16 / 12}
+                        className="flex flex-row w-full items-center justify-start gap-2 my-4"
+                    >
+                        {/**random image from images.unsplash.it */}
+                        <Image
+                            src="https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200"
+                            alt="random"
+                            width={1080}
+                            priority
+                            height={720}
+                            className="rounded-xl"
+                        />
+                    </AspectRatio>
+                )
+            }
             <Separator
                 className="w-full my-1"
             />

@@ -16,6 +16,7 @@ import { type ChangeEvent, useState } from "react"
 import { Separator } from "@radix-ui/react-separator"
 import FileUpload from "./file-upload"
 import { ScrollArea } from "@radix-ui/react-scroll-area"
+import { useMediaQuery } from "react-responsive"
 
 export default function SubmitFeedback() {
     const [fileList, setFileList] = useState<FileList | null>(null);
@@ -47,12 +48,16 @@ export default function SubmitFeedback() {
 
     // 👇 files is not an array, but it's iterable, spread to get an array of files
     const files = fileList ? [...fileList] : [];
+    const isMobile = useMediaQuery({ query: "(max-width: 600px)" })
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline">
-                    <PlusCircleIcon className="mr-2" /> Post
+                <Button variant="ghost"
+                    className="rounded-full"
+                >
+                    <PlusCircleIcon className="mr-2" /> 
+                    {!isMobile && <span>Submit Feedback</span>}
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">

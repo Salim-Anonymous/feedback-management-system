@@ -3,6 +3,7 @@ import Header from "./header"
 import React, { useEffect } from "react"
 import { useMediaQuery } from "react-responsive"
 import { ScrollArea } from "../ui/scroll-area"
+import { Separator } from "../ui/separator"
 
 const AppShell = ({ children }: { children: React.ReactNode }) => {
     const [sidebarOpen, setSidebarOpen] = React.useState(false)
@@ -23,7 +24,7 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
     >
         {/** content */}
         <main
-            className="flex min-h-screen w-full flex-col lg:pl-72 items-center justify-center pt-20 bg-gradient-to-br from-gray-900 to-gray-800 "
+            className="flex min-h-screen w-full flex-col lg:pl-72 items-center justify-center pt-20"
         >
             <ScrollArea
                 className="w-full h-full px-2 lg:pl-4"
