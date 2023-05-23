@@ -1,19 +1,18 @@
-import React from 'react'
 import AppShell from "@/components/custom/appshell";
-import {api} from "@/utils/api";
-import {useRouter} from "next/router";
+import TabComponent from "@/components/ui/profile/option";
+import ProfilePicture from "@/components/ui/profile/profilePicture";
+import React from "react";
 
-function Profile() {
-    const router = useRouter();
-    const {id} = router.query;
-    const {data: categories, error} = api.category.getAll.useQuery({text: ""});
-    return (
-        <AppShell>
-            <div className="flex flex-col">
-                {id}
-            </div>
-        </AppShell>
-    )
-}
+const ProfilePage = () => {
+  return (
+    <AppShell>
+        <div className="flex flex-col">
+      <h1 className="text-2xl font-bold mb-4 text-center">My profile</h1>
+      <ProfilePicture />
+      <TabComponent />
+    </div>
+    </AppShell>
+  );
+};
 
-export default Profile
+export default ProfilePage;

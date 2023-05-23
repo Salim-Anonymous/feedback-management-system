@@ -1,9 +1,6 @@
 import {
-    ArrowUpIcon,
-    ArrowDownIcon,
     FlagIcon,
     HeartIcon,
-    MessageCircle
 } from "lucide-react"
 import {
     Avatar,
@@ -17,9 +14,10 @@ import { Toggle } from "../ui/toggle"
 import { AspectRatio } from "../ui/aspect-ratio"
 import CommentsDialog from "./comment"
 import {api} from "@/utils/api";
+import Vote from "@/components/custom/vote";
 
 type Feedback = {
-    avatar?: string | undefined,
+    avatar?: string | undefined | null,
     name?: string | null,
     time: Date,
     subject: string,
@@ -27,7 +25,9 @@ type Feedback = {
     number: bigint,
     image?: string[]|null,
     status: string,
-    id: string
+    id: string,
+    authorId: string | null,
+    uuid: string | undefined | null
 }
 const Post = ({
     avatar="https://avatars.githubusercontent.com/u/25105806?v=4",
@@ -37,16 +37,19 @@ const Post = ({
     description,
     number,
     status,
-    id
+    id,
+    authorId,
+    uuid
 }: Feedback) => {
 
-    const {data:images,isLoading:imageLoading} = api.image.getImagesForFeedback.useQuery({feedbackId: id});
-
-    const upvote = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault()
-
+    if (authorId != null) {
+        const {data:author} = api.user.getUser.useQuery({userId: authorId});
+        if (author != null) {
+            avatar = author.image;
+            name = author.name;
+        }
     }
-
+    const {data:images,isLoading:imageLoading} = api.image.getImagesForFeedback.useQuery({feedbackId: id});
     return (
         <div
             className="flex flex-col my-4 w-full md:w-2/3 items-start justify-start shadow-md border border-1 border-gray-400 dark:bg-black/50 dark:text-white rounded-xl px-4 py-4"
@@ -136,30 +139,7 @@ const Post = ({
             <div
                 className="flex flex-row w-full items-center justify-evenly gap-4 my-1"
             >
-                <Toggle
-                    className="flex flex-row w-full items-center justify-center gap-2"
-                >
-                    <ArrowUpIcon
-                        className="w-4 h-4"
-                    />
-                    <p
-                        className="text-xs"
-                    >
-                        1.2k
-                    </p>
-                </Toggle>
-                <Toggle
-                    className="flex flex-row w-full items-center justify-center gap-2"
-                >
-                    <ArrowDownIcon
-                        className="w-4 h-4"
-                    />
-                    <p
-                        className="text-xs"
-                    >
-                        1.2k
-                    </p>
-                </Toggle>
+                <Vote id={id} uuid={uuid} />
                 <Toggle
                     className="flex flex-row w-full items-center justify-center gap-2"
                 >

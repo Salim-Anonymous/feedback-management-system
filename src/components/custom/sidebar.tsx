@@ -5,6 +5,8 @@ import { Checkbox } from "../ui/checkbox"
 import { ScrollArea } from "../ui/scroll-area"
 import { SidebarClose } from "lucide-react"
 import { useMediaQuery } from "react-responsive"
+import Link from "next/link";
+import {api} from "@/utils/api";
 
 const Sidebar = ({
     open,
@@ -34,39 +36,7 @@ const Sidebar = ({
         },
     ]
 
-    const categories = [
-        {
-            name: "Academics",
-            flag: "🎓"
-        },
-        {
-            name: "Teaching Experience",
-            flag: "👨‍🏫"
-        },
-        {
-            name: "Course Content",
-            flag: "📚"
-        },
-        {
-            name: "Facilities & Services",
-            flag: "🏫"
-        },
-        {
-            name: "Safety & Security",
-            flag: "🚨"
-        },
-        {
-            name: "Student Support",
-            flag: "👨‍👩‍👧‍👦"
-        }, {
-            name: "Extracurricular Activities",
-            flag: "🎨"
-        },
-        {
-            name: "Administration & Policies",
-            flag: "📝"
-        },
-    ]
+    const {data:categories,isLoading} = api.category.getAll.useQuery({text: ""});
 
     return <aside
         className={`fixed top-0 left-0 w-72 py-6 lg:pt-20 px-6 h-screen flex flex-col items-start border border-l-black justify-start bg-white dark:text-white dark:bg-black/30 transition-all ease-in-out duration-300 z-50 lg:z-0 ${open ? "translate-x-0" : "-translate-x-full"}`}
@@ -81,22 +51,37 @@ const Sidebar = ({
                 Close
             </Button>
         }
-        {links.map((link, index) => <Button
-            key={index}
-            variant={"ghost"}
-            className="text-md font-semibold mb-4 w-full flex justify-start whitespace-nowrap"
-            onClick={() => location.href = link.href}
-        >
-            {link.icon}
-            {link.name}
-        </Button>
+        {links.map((link, index) => <Link href={  link.href } key={index}>
+            <Button
+                key={index}
+                variant={"ghost"}
+                className="text-md font-semibold mb-4 w-full flex justify-start whitespace-nowrap"
+            >
+                {link.icon}
+                {link.name}
+            </Button>
+        </Link>
         )}
         <Separator className="w-full my-4" />
         <h2 className="text-xl font-bold mb-4">Categories</h2>
         <ScrollArea
             className="h-5/6 p-4"
         >
-            {categories.map((category, index) => <div
+            {
+                isLoading && <div className="w-full flex justify-center items-center">
+                    <span className="text-sm font-semibold">Loading...</span>
+                </div>
+            }
+            {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                !isLoading && categories.length === 0 && <div className="w-full flex justify-center items-center">
+                    <span className="text-sm font-semibold">No categories found</span>
+                </div>
+            }
+            {   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                categories?.map((category, index) => <div
                 key={index}
                 className="w-full flex justify-start items-center mb-4"
             >
@@ -104,7 +89,6 @@ const Sidebar = ({
                     className="bg-white/20 border-black/20"
                 />
                 <label htmlFor={`category-${index}`} className="ml-2 text-sm font-semibold flex items-center">
-                    {category.flag}
                     {category.name}
                 </label>
             </div>)}

@@ -2,198 +2,202 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url      = env("DATABASE_URL")
 }
 
 // enums
 enum Role {
-    ADMIN
-    USER
-    MODERATOR
+  ADMIN
+  USER
+  MODERATOR
 }
 
 enum FeedbackStatus {
-    OPEN
-    FLAGGED
-    CLOSED
+  OPEN
+  FLAGGED
+  CLOSED
 }
 
 enum USER_STATUS {
-    BANNED_FROM_POSTING
-    ACTIVE
+  BANNED_FROM_POSTING
+  ACTIVE
 }
 
 enum Visibility {
-    ANONYMOUS
-    PUBLIC
+  ANONYMOUS
+  PUBLIC
 }
 
 enum VoteType {
-    UPVOTE
-    DOWNVOTE
+  UPVOTE
+  DOWNVOTE
 }
 
 enum ImageType {
-    FEEDBACK
-    COMMENT
+  FEEDBACK
+  COMMENT
 }
 
 // models
-model Feedback{
-    id String @id @default(cuid())
-    number BigInt @unique   @default(autoincrement())
-    subject String
-    description String?
-    status FeedbackStatus @default(OPEN)
-    author User? @relation(fields: [authorId], references: [id])
-    authorId String?
-    visibility Visibility @default(ANONYMOUS)
-    comments Comment[]
-    reports Report[]
-    votes Vote[]
-    likes Like[]
-    image Image[]
-    category CategoryOnFeedback[]
-    createdAt DateTime @default(now())
-    flaggedAt DateTime?
-    closedAt DateTime?
+model Feedback {
+  id          String               @id @default(cuid())
+  number      BigInt               @unique @default(autoincrement())
+  subject     String
+  description String?
+  status      FeedbackStatus       @default(OPEN)
+  author      User?                @relation(fields: [authorId], references: [id])
+  authorId    String?
+  visibility  Visibility           @default(ANONYMOUS)
+  comments    Comment[]
+  reports     Report[]
+  votes       Vote[]
+  likes       Like[]
+  image       Image[]
+  category    CategoryOnFeedback[]
+  createdAt   DateTime             @default(now())
+  flaggedAt   DateTime?
+  closedAt    DateTime?
 }
 
-model CategoryOnFeedback{
-    feedback  Feedback @relation(fields: [feedbackId], references: [id])
-    feedbackId String
-    category  Category @relation(fields: [categoryId], references: [id])
-    categoryId String
-    assignedAt DateTime @default(now())
+model CategoryOnFeedback {
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+  assignedAt DateTime @default(now())
 
-    @@id([feedbackId, categoryId])
+  @@id([feedbackId, categoryId])
 }
 
-model Vote{
-    id String @id @default(cuid())
-    type VoteType
-    author User @relation(fields: [authorId], references: [id])
-    authorId String
-    feedback Feedback @relation(fields: [feedbackId], references: [id])
-    feedbackId String
-    createdAt DateTime @default(now())
+model Vote {
+  id         String   @id @default(cuid())
+  type       VoteType
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+  createdAt  DateTime @default(now())
 }
 
-model Like{
-    id String @id @default(cuid())
-    author User @relation(fields: [authorId], references: [id])
-    authorId String
-    feedback Feedback @relation(fields: [feedbackId], references: [id])
-    feedbackId String
-    createdAt DateTime @default(now())
+model Like {
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+  createdAt  DateTime @default(now())
+
+  @@id([authorId, feedbackId])
 }
 
-model Comment{
-    id String @id @default(cuid())
-    message String?
-    image Image[]
-    author User? @relation(fields: [authorId], references: [id])
-    authorId String?
-    feedback Feedback? @relation(fields: [feedbackId], references: [id])
-    feedbackId String?
-    visibility Visibility @default(ANONYMOUS)
-    createdAt DateTime @default(now())
+model Comment {
+  id         String     @id @default(cuid())
+  message    String?
+  image      Image[]
+  author     User?      @relation(fields: [authorId], references: [id])
+  authorId   String?
+  feedback   Feedback   @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+  visibility Visibility @default(ANONYMOUS)
+  createdAt  DateTime   @default(now())
 }
 
-model Report{
-    id String @id @default(cuid())
-    message String?
-    author User? @relation(fields: [authorId], references: [id])
-    authorId String?
-    feedback Feedback? @relation(fields: [feedbackId], references: [id])
-    feedbackId String?
-    createdAt DateTime @default(now())
+model Report {
+  id         String   @id @default(cuid())
+  message    String?
+  author     User?    @relation(fields: [authorId], references: [id])
+  authorId   String?
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+  createdAt  DateTime @default(now())
 }
 
-model Image{
-    id String @id @default(cuid())
-    url String
-    type ImageType
-    comment Comment? @relation(fields: [commentId], references: [id])
-    commentId String?
-    createdAt DateTime @default(now())
-    feedback Feedback? @relation(fields: [feedbackId], references: [id])
-    feedbackId String?
+model Image {
+  id         String    @id @default(cuid())
+  url        String
+  type       ImageType
+  comment    Comment?  @relation(fields: [commentId], references: [id])
+  commentId  String?
+  createdAt  DateTime  @default(now())
+  feedback   Feedback? @relation(fields: [feedbackId], references: [id])
+  feedbackId String?
 }
 
-model Category{
-    id String @id @default(cuid())
-    name String
-    description String?
-    feedbacks CategoryOnFeedback[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Category {
+  id          String               @id @default(cuid())
+  name        String
+  description String?
+  moderator   User?                @relation(fields: [moderatorId], references: [id])
+  moderatorId String?
+  feedbacks   CategoryOnFeedback[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
 }
 
-model Notification{
-    id String @id @default(cuid())
-    message String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Notification {
+  id        String   @id @default(cuid())
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    role          Role      @default(USER)
-    status        USER_STATUS @default(ACTIVE)
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    feedbacks      Feedback[]
-    comments      Comment[]
-    reports      Report[]
-    votes      Vote[]
-    likes      Like[]
+  id            String      @id @default(cuid())
+  name          String?
+  email         String?     @unique
+  emailVerified DateTime?
+  role          Role        @default(USER)
+  status        USER_STATUS @default(ACTIVE)
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  feedbacks     Feedback[]
+  comments      Comment[]
+  reports       Report[]
+  votes         Vote[]
+  likes         Like[]
+  categories    Category[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }

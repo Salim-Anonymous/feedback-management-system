@@ -1,44 +1,46 @@
 import React from 'react'
 import {EditIcon, TrashIcon} from "lucide-react";
 import AppShell from "@/components/custom/appshell";
-
-
-//make sure to go to http://localhost:3000/feed
-
+import {api} from "@/utils/api";
+import CategoryDialog from "@/components/custom/add-category";
 function Admin() {
+
+    const {data: categories } = api.category.getAll.useQuery({text: ""});
+    const {data: users} = api.user.getAll.useQuery({text: ""});
+    const deleteCategory = api.category.deleteCategory.useMutation();
+
     return (
         <AppShell>
-        <div className="flex flex-col items-center justify-center">
-            <div className="bg-white rounded-lg p-8 shadow-lg mt-6">
-                <h1 className="text-2xl font-bold mb-6">Categories and Moderators Management</h1>
-
-                <div className="flex border-2 rounded-md mt-6">
-                    <div className="flex-grow p-2">Academic Performance</div>
-                    <div className="flex-grow p-2">Ngawang Choden</div>
-                    <div className="p-2">
-                        <EditIcon />
-                    </div>
-                    <div className="p-2">
-                        <TrashIcon />
-                    </div>
-                </div>
-
-                <div className="flex border-2 rounded-md">
-                    <div className="flex-grow p-2">Academic Performance</div>
-                    <div className="flex-grow p-2">Ngawang Choden</div>
-                    <div className="p-2">
-                        <EditIcon />
-                    </div>
-                    <div className="p-2">
-                        <TrashIcon />
-                    </div>
-                </div>
-
-                <center>
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-6">
-                        Add Category
-                    </button>
-                </center>
+        <div className="flex flex-col">
+            <div className="rounded-lg p-8 shadow-lg mt-6 border">
+                <h1 className="text-2xl font-bold mb-6">Categories Management</h1>
+                {
+                    categories?.length ===0 ? <div className="flex flex-col items-center justify-center">
+                        <span className="text-xl font-bold">No categories found</span>
+                        <span className="text-lg">Add a category to get started</span>
+                    </div> : ""
+                }
+                {
+                    categories?.map((category, index) => {
+                        return (<div
+                            key={index.toString()+"category-admin"}
+                            className="flex border-2 rounded-md mt-6">
+                            <div className="flex-grow p-1">{category.name}</div>
+                            <div className="flex-grow p-1 text-gray-300">
+                                {users?.find(user => user.id === category.moderatorId)?.name}
+                            </div>
+                            <div className="p-2">
+                                <EditIcon />
+                            </div>
+                            <div className="p-2">
+                                <TrashIcon
+                                    className='hover:text-red-500 cursor-pointer'
+                                    onClick={() => deleteCategory.mutate({categoryId:category.id})}
+                                />
+                            </div>
+                        </div>)} )
+                }
+                <CategoryDialog />
             </div>
         </div>
         </AppShell>

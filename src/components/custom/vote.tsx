@@ -1,213 +1,59 @@
-import {
-    ArrowUpIcon,
-    ArrowDownIcon,
-    FlagIcon,
-    HeartIcon,
-    MessageCircle
-} from "lucide-react"
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage
-} from "../ui/avatar"
-import { Separator } from "../ui/separator"
-import Image from "next/image"
-import { Button } from "../ui/button"
-import { Toggle } from "../ui/toggle"
-import { AspectRatio } from "../ui/aspect-ratio"
-import CommentsDialog from "./comment"
-import {api} from "@/utils/api";
-import {useEffect, useState} from "react";
+// noinspection TypeScriptValidateTypes
 
-type Feedback = {
-    avatar?: string | undefined | null,
-    name?: string | null,
-    time: Date,
-    subject: string,
-    description?: string|null,
-    number: bigint,
-    image?: string[]|null,
-    status: string,
+import {ArrowDownIcon, ArrowUpIcon} from "lucide-react"
+import {api} from "@/utils/api";
+
+type Props = {
     id: string,
-    authorId: string | null,
     uuid: string | undefined | null
 }
-const Post = ({
-                  avatar="https://avatars.githubusercontent.com/u/25105806?v=4",
-                  name="Anonymous",
-                  time,
-                  subject,
-                  description,
-                  number,
-                  status,
-                  id,
-                  authorId,
-                  uuid
-              }: Feedback) => {
-
-    if (authorId != null) {
-        const {data:author} = api.user.getUser.useQuery({userId: authorId});
-        if (author != null) {
-            avatar = author.image;
-            name = author.name;
-        }
-    }
-    const { data:voted } = api.vote.checkIfUserHasVoted.useQuery({feedbackId: id, userId: uuid});
-    const {data:votes} = api.vote.getVoteCountForFeedback.useQuery({feedbackId: id});
-    const {data:images,isLoading:imageLoading} = api.image.getImagesForFeedback.useQuery({feedbackId: id});
+const Vote = ({ id, uuid }: Props) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const {data: voted} = api.vote.checkIfUserHasVoted.useQuery({feedbackId: id, userId: uuid});
+    const {data: votes} = api.vote.getVoteCountForFeedback.useQuery({feedbackId: id});
     const upvote = api.vote.upvote.useMutation();
     const downvote = api.vote.downvote.useMutation();
+
     return (
         <div
-            className="flex flex-col my-4 w-full md:w-2/3 items-start justify-start shadow-md border border-1 border-gray-400 dark:bg-black/50 dark:text-white rounded-xl px-4 py-4"
-        >
-        <div
-            className="flex flex-row w-full items-center justify-start gap-4"
-        >
-        <Avatar
-            className="w-12 h-12"
-        >
-        <AvatarImage
-            className="w-12 h-12"
-    src={avatar}
-    alt="avatar"
-    />
-    <AvatarFallback
-        className="w-12 h-12"
-    >
-    {name != null ? name[0] : "A"}
-    </AvatarFallback>
-    </Avatar>
-    <div
-    className="flex flex-col w-full items-start justify-start gap-2"
-    >
-    <div
-        className="flex flex-row w-full items-center justify-start gap-2"
-    >
-    <p
-        className="text-sm font-semibold"
-        >
-        {name}
-        </p>
-        <p
-    className="text-xs text-gray-400"
-        >
-        {Date.now() - time.getTime() > 86400000 ? `${Math.floor((Date.now() - time.getTime()) / 86400000)} days ago` : `${Math.floor((Date.now() - time.getTime()) / 3600000)} hours ago`}
-        </p>
-        </div>
-        <p
-    className="text-sm flex gap-4"
-    >
-    #{number.toString()}
-    {status === "OPEN" ? <span className="text-green-500">Open</span> : <span className="text-red-500">Closed</span>}
-    </p>
-    </div>
-    </div>
-    <Separator
-    className="w-full my-4"
-    />
-    <div
-        className="flex flex-col w-full items-start justify-start gap-2"
-    >
-    <p
-        className="text-lg font-semibold"
-        >
-        {subject}
-        </p>
-        <p
-    className="text-sm"
-        >
-        {description}
-        </p>
-        </div>
-    {/** Images display */}
-    {
-        images ? "" :
-            imageLoading ?<p>Loading</p>:(
-                <AspectRatio
-                ratio={16 / 12}
-        className="flex flex-row w-full items-center justify-start gap-2 my-4"
+            className="flex flex-row w-full items-center justify-evenly gap-4 my-1" >
+            <div
+                className={`flex flex-row w-1/2 rounded-md items-center justify-center px-2 py-1 gap-2 ${voted?.hasVoted && voted?.voteType === "UPVOTE" ? "text-green-500 bg-accent" : ""}`}
+                onClick={() => {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    upvote.mutate({feedbackId: id, userId: uuid});
+                }}
             >
-            {/**random image from images.unsplash.it */}
-            <Image
-        src="https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200"
-        alt="random"
-        width={1080}
-        priority
-        height={720}
-        className="rounded-xl"
-            />
-            </AspectRatio>
+                <ArrowUpIcon
+                    className="w-4 h-4"
+                />
+                <p
+                    className={`text-xs `}
+                >
+                    {votes?.upvotes}
+                </p>
+            </div>
+            <div
+                className={`flex flex-row w-1/2 items-center justify-center px-2 py-1 gap-2 ${voted?.hasVoted && voted?.voteType === "DOWNVOTE" ? "text-red-500 bg-accent" : ""}`}
+                onClick={() => {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    downvote.mutate({feedbackId: id, userId: uuid});
+                }}
+            >
+                <ArrowDownIcon
+                    className="w-4 h-4"
+                />
+                <p
+                    className="text-xs"
+                >
+                    {votes?.downvotes}
+                </p>
+            </div>
+        </div>
     )
-    }
-    <Separator
-        className="w-full my-1"
-    />
-    <div
-        className="flex flex-row w-full items-center justify-evenly gap-4 my-1"
-    >
-    <div
-        className={`flex flex-row w-1/2 rounded-md items-center justify-center px-2 py-1 gap-2 ${voted?.hasVoted && voted?.voteType==="UPVOTE" ? "text-green-500 bg-accent" : ""}`}
-    onClick={() => {
-        upvote.mutate({feedbackId: id, userId: uuid});
-    }}
->
-    <ArrowUpIcon
-        className="w-4 h-4"
-    />
-    <p
-        className={`text-xs `}
->
-    {votes?.upvotes}
-    </p>
-    </div>
-    <div
-    className={`flex flex-row w-1/2 items-center justify-center px-2 py-1 gap-2 ${voted?.hasVoted && voted?.voteType==="DOWNVOTE" ? "text-red-500 bg-accent" : ""}`}
-    onClick={() => {
-        downvote.mutate({feedbackId: id, userId: uuid});
-    }}
->
-    <ArrowDownIcon
-        className="w-4 h-4"
-    />
-    <p
-        className="text-xs"
-        >
-        {votes?.downvotes}
-    </p>
-    </div>
-    <Toggle
-    className="flex flex-row w-full items-center justify-center gap-2"
-    >
-    <HeartIcon
-        className="w-4 h-4"
-    />
-    <p
-        className="text-xs"
-        >
-        1.2k
-    </p>
-    </Toggle>
-    </div>
-    <div
-    className="flex flex-row w-full items-center justify-evenly gap-2 my-4"
-    >
-    <CommentsDialog id="sadsad" />
-    <Button
-        className="flex flex-row w-1/2 bg-red-500 items-center justify-start gap-2"
-    >
-    <FlagIcon
-        className="w-4 h-4"
-    />
-    <p
-        className="text-sm"
-        >
-        5 reports
-    </p>
-    </Button>
-    </div>
-    </div>
-)
 }
 
-export default Post
+export default Vote;

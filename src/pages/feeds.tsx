@@ -8,7 +8,7 @@ import {api} from "@/utils/api";
 
 const Feeds: NextPage = (_props) => {
     const {data:feedbacks} = api.feedback.getAll.useQuery({text:""});
-    const { status} = useSession();
+    const { status,data:session} = useSession();
     if (status == "loading") return <InitialPageLoading />;
     if (status === "unauthenticated") location.href = "/";
 
@@ -31,6 +31,8 @@ const Feeds: NextPage = (_props) => {
                             number={feedback.number}
                             status={feedback.status}
                             id={feedback.id}
+                            authorId={feedback.authorId}
+                            uuid={session?.user?.id}
                         />
                     })
                 }

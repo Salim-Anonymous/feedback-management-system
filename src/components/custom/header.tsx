@@ -24,6 +24,8 @@ import { ScrollArea } from "../ui/scroll-area"
 import SubmitFeedback from "./submit-feedback"
 import ThemeToggle from "./themeToggle"
 import useLocalStorage from "@/hooks/useLocalStorage"
+import Link from "next/link";
+import {useSession} from "next-auth/react";
 
 const Header = ({
     open,
@@ -37,6 +39,8 @@ const Header = ({
     const isMobile = useMediaQuery({ query: "(max-width: 767px)" })
     const [theme, setTheme] = useLocalStorage("", "light")
     const logo = theme === 'light' ? "/whitelogo.svg" : "/blacklogo.svg"
+    const {data: session,status} = useSession()
+    const isAdmin = true
 
     return <header
         className="fixed top-0 left-0 w-full h-16 px-3 flex items-center justify-between bg-white dark:bg-black shadow-md ease-in-out duration-300"
@@ -55,7 +59,16 @@ const Header = ({
         <div
             className="w-full flex justify-end items-center gap-3"
         >
-            <SubmitFeedback />
+            <Link
+                href={"/postfeed"}
+            >
+                <Button
+                    className="hidden md:block"
+                    variant="ghost"
+                >
+                    Post Feed
+                </Button>
+            </Link>
             <Popover>
                 <PopoverTrigger
                     className="outline-none focus:outline-none rounded-full p-1 cursor-pointer"
@@ -112,8 +125,22 @@ const Header = ({
                 >
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Team</DropdownMenuItem>
+                    <DropdownMenuItem>
+                        {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
+                        <Link href={`/profile`}>
+                            Profile
+                        </Link>
+                    </DropdownMenuItem>
+                    {isAdmin && <DropdownMenuItem>
+                        <Link href={`/admin`}>
+                            Admin
+                        </Link>
+                    </DropdownMenuItem>}
+                    <DropdownMenuItem>
+                        <Link href={`/settings`}>
+                            Settings
+                        </Link>
+                    </DropdownMenuItem>
                     <Separator className="w-full my-2" />
                     <DropdownMenuItem
                         className="p-0 m-0 bg-transparent hover:bg-transparent"
