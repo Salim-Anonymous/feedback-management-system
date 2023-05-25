@@ -1,100 +1,108 @@
-import { TrendingUpIcon, LucideFeather, NewspaperIcon } from "lucide-react"
-import { Button } from "../ui/button"
-import { Separator } from "../ui/separator"
-import { Checkbox } from "../ui/checkbox"
-import { ScrollArea } from "../ui/scroll-area"
-import { SidebarClose } from "lucide-react"
-import { useMediaQuery } from "react-responsive"
+import { FlameIcon, NewspaperIcon } from "lucide-react";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { Checkbox } from "../ui/checkbox";
+import { ScrollArea } from "../ui/scroll-area";
+import { SidebarClose } from "lucide-react";
+import { useMediaQuery } from "react-responsive";
 import Link from "next/link";
-import {api} from "@/utils/api";
+import { api } from "@/utils/api";
+import { Skeleton } from "../ui/skeleton";
 
 const Sidebar = ({
-    open,
-    setOpen
+  open,
+  setOpen,
 }: {
-    open: boolean,
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const isMobileOrTablet = useMediaQuery({ query: "(max-width: 1023px)" });
 
-    const isMobileOrTablet = useMediaQuery({ query: "(max-width: 1023px)" })
+  const links = [
+    {
+      name: "Newsfeed",
+      href: "/feeds",
+      icon: <NewspaperIcon size={24} className="mr-2 inline" />,
+    },
+    {
+      name: "Hot",
+      href: "/hot",
+      icon: <FlameIcon size={24} className="mr-2 inline" />,
+    },
+  ];
 
-    const links = [
-        {
-            name: "Newsfeed",
-            href: "/feeds",
-            icon: <NewspaperIcon size={24} className="inline mr-2" />
-        },
-        {
-            name: "Hot",
-            href: "/hot",
-            icon: <TrendingUpIcon size={24} className="inline mr-2" />
-        },
-        {
-            name: "Featured",
-            href: "/featured",
-            icon: <LucideFeather size={24} className="inline mr-2" />
-        },
-    ]
-
-    const {data:categories,isLoading} = api.category.getAll.useQuery({text: ""});
-
-    return <aside
-        className={`fixed top-0 left-0 w-72 py-6 lg:pt-20 px-6 h-screen flex flex-col items-start border border-l-black justify-start bg-white dark:text-white dark:bg-black/30 transition-all ease-in-out duration-300 z-50 lg:z-0 ${open ? "translate-x-0" : "-translate-x-full"}`}
+  const { data: categories, isLoading:categoriesLoading } = api.category.getAll.useQuery();
+  return (
+    <aside
+      className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col items-start justify-start border border-l-black bg-white px-6 py-6 transition-all duration-300 ease-in-out dark:bg-black/90 dark:text-white lg:z-0 lg:pt-20 ${
+        open ? "translate-x-0" : "-translate-x-full"
+      }`}
     >
-        {
-            isMobileOrTablet && <Button
-                variant={"ghost"}
-                className="text-sm font-semibold mb-4 w-full flex justify-start whitespace-nowrap"
-                onClick={() => setOpen(false)}
-            >
-                <SidebarClose size={12} className="inline mr-2" />
-                Close
-            </Button>
-        }
-        {links.map((link, index) => <Link href={  link.href } key={index}>
-            <Button
-                key={index}
-                variant={"ghost"}
-                className="text-md font-semibold mb-4 w-full flex justify-start whitespace-nowrap"
-            >
-                {link.icon}
-                {link.name}
-            </Button>
-        </Link>
-        )}
-        <Separator className="w-full my-4" />
-        <h2 className="text-xl font-bold mb-4">Categories</h2>
-        <ScrollArea
-            className="h-5/6 p-4"
+      {isMobileOrTablet && (
+        <Button
+          variant={"ghost"}
+          className="mb-4 flex w-full justify-start whitespace-nowrap text-sm font-semibold"
+          onClick={() => setOpen(false)}
         >
-            {
-                isLoading && <div className="w-full flex justify-center items-center">
-                    <span className="text-sm font-semibold">Loading...</span>
-                </div>
-            }
-            {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                !isLoading && categories.length === 0 && <div className="w-full flex justify-center items-center">
-                    <span className="text-sm font-semibold">No categories found</span>
-                </div>
-            }
-            {   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                categories?.map((category, index) => <div
-                key={index}
-                className="w-full flex justify-start items-center mb-4"
+          <SidebarClose size={12} className="mr-2 inline" />
+          Close
+        </Button>
+      )}
+      {links.map((link, index) => (
+        <Link href={link.href} key={index}>
+          <Button
+            key={index}
+            variant={"ghost"}
+            className="text-md mb-4 flex w-full justify-start whitespace-nowrap font-semibold"
+          >
+            {link.icon}
+            {link.name}
+          </Button>
+        </Link>
+      ))}
+      <Separator className="my-4 w-full" />
+      <h2 className="mb-4 text-xl font-bold">Categories</h2>
+      <ScrollArea className="h-5/6 p-4">
+        {categoriesLoading && (
+          <Skeleton className="w-full h-5"/>
+        )}
+        {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          !categoriesLoading && categories?.length === 0 && (
+            <div className="flex w-full items-center justify-center">
+              <span className="text-sm font-semibold">No categories found</span>
+            </div>
+          )
+        }
+        {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          categories?.map((cat, index) => (
+            <div
+              key={`${index}sidebar_category`}
+              className="mb-4 flex w-full items-center justify-start"
             >
-                <Checkbox id={`category-${index}`}
-                    className="bg-white/20 border-black/20"
-                />
-                <label htmlFor={`category-${index}`} className="ml-2 text-sm font-semibold flex items-center">
-                    {category.name}
-                </label>
-            </div>)}
-
-        </ScrollArea>
+              <Checkbox
+                id={`category-${cat.id}`}
+                className="border-black/20 bg-white/20"
+              />
+              <label
+                htmlFor={`category-${cat.id}-label`}
+                className="ml-2 flex items-center text-sm font-semibold"
+              >
+                {cat.name}
+              </label>
+            </div>
+          ))
+        }
+        {
+          
+        }
+      </ScrollArea>
     </aside>
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

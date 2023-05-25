@@ -1,50 +1,90 @@
-import React from 'react'
-import {EditIcon, TrashIcon} from "lucide-react";
+import React from "react";
 import AppShell from "@/components/custom/appshell";
-import {api} from "@/utils/api";
+import { api } from "@/utils/api";
 import CategoryDialog from "@/components/custom/add-category";
-function Admin() {
+import { type ColumnDef } from "@tanstack/react-table";
+import { type NextPage } from "next";
+import { DataTable } from "@/components/custom/data-table/table";
+import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 
-    const {data: categories } = api.category.getAll.useQuery({text: ""});
-    const {data: users} = api.user.getAll.useQuery({text: ""});
-    const deleteCategory = api.category.deleteCategory.useMutation();
+type CategoryData = {
+  id: string;
+  moderator: string;
+  category: string;
+};
 
+const columns: ColumnDef<CategoryData>[] = [
+  {
+    accessorKey: "id",
+    header: "Sl No.",
+  },
+  {
+    accessorKey: "name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Category
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+  },
+  {
+    accessorKey: "moderator",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Moderator
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+  },
+];
+
+const Admin: NextPage = () => {
+  const { data: session } = useSession();
+  if (session?.user?.role !== "ADMIN") {
     return (
-        <AppShell>
-        <div className="flex flex-col">
-            <div className="rounded-lg p-8 shadow-lg mt-6 border">
-                <h1 className="text-2xl font-bold mb-6">Categories Management</h1>
-                {
-                    categories?.length ===0 ? <div className="flex flex-col items-center justify-center">
-                        <span className="text-xl font-bold">No categories found</span>
-                        <span className="text-lg">Add a category to get started</span>
-                    </div> : ""
-                }
-                {
-                    categories?.map((category, index) => {
-                        return (<div
-                            key={index.toString()+"category-admin"}
-                            className="flex border-2 rounded-md mt-6">
-                            <div className="flex-grow p-1">{category.name}</div>
-                            <div className="flex-grow p-1 text-gray-300">
-                                {users?.find(user => user.id === category.moderatorId)?.name}
-                            </div>
-                            <div className="p-2">
-                                <EditIcon />
-                            </div>
-                            <div className="p-2">
-                                <TrashIcon
-                                    className='hover:text-red-500 cursor-pointer'
-                                    onClick={() => deleteCategory.mutate({categoryId:category.id})}
-                                />
-                            </div>
-                        </div>)} )
-                }
-                <CategoryDialog />
-            </div>
+      <AppShell>
+        <div className="flex w-full flex-col items-center justify-center">
+          <h1 className="text-center text-2xl font-bold">
+            You are not authorized to access this page
+          </h1>
         </div>
-        </AppShell>
-    )
-}
-
-export default Admin
+      </AppShell>
+    );
+  }
+  const { data: categories } = api.category.getAll.useQuery();
+  const { data: users } = api.user.getAll.useQuery({ text: "" });
+  const data = categories?.map((category, index) => {
+    const { id, name, moderatorId } = category;
+    return {
+      id: id,
+      name,
+      moderator: users?.find((user) => user.id === moderatorId)?.name,
+    };
+  });
+  /**
+   *
+   * **/
+  return (
+    <AppShell>
+      <div className="flex flex-col items-start justify-start">
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore*/}
+        <DataTable columns={columns} data={data} />
+        <CategoryDialog />
+      </div>
+    </AppShell>
+  );
+};
+export default Admin;

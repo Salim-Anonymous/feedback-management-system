@@ -1,164 +1,54 @@
-import { SidebarOpen, SidebarClose, Settings2Icon, BellIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useMediaQuery } from "react-responsive"
-import Image from "next/image"
-import React from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import AuthShowcase from "./auth-showcase"
-import { Separator } from "../ui/separator"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { useMediaQuery } from "react-responsive";
+import Image from "next/image";
+import React from "react";
 
-import { ScrollArea } from "../ui/scroll-area"
-import SubmitFeedback from "./submit-feedback"
-import ThemeToggle from "./themeToggle"
-import useLocalStorage from "@/hooks/useLocalStorage"
-import Link from "next/link";
-import {useSession} from "next-auth/react";
+import ThemeToggle from "./themeToggle";
+import PostFeedback from "@/components/custom/create-post";
+import { color } from "./themeToggle";
+import UserDropDown from "./user-menu";
+import SidebarButton from "./sidebarButton";
+import { BellRingIcon, MessageCircleIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Notifications } from "./notification";
 
 const Header = ({
-    open,
-    setOpen
+  open,
+  setOpen,
 }: {
-    open: boolean,
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-
-    const isMobileOrTablet = useMediaQuery({ query: "(max-width: 1023px)" })
-    const isMobile = useMediaQuery({ query: "(max-width: 767px)" })
-    const [theme, setTheme] = useLocalStorage("", "light")
-    const logo = theme === 'light' ? "/whitelogo.svg" : "/blacklogo.svg"
-    const {data: session,status} = useSession()
-    const isAdmin = true
-
-    return <header
-        className="fixed top-0 left-0 w-full h-16 px-3 flex items-center justify-between bg-white dark:bg-black shadow-md ease-in-out duration-300"
-    >
-        {isMobile ? <Image
-            className="cursor-pointer mr-1"
-            src={logo}
-            priority
-            width={70}
-            height={50} alt={"logo"} /> : <Image
-            className="cursor-pointer mr-1"
-            src={logo}
-            priority
-            width={100}
-            height={50} alt={"logo"} />}
-        <div
-            className="w-full flex justify-end items-center gap-3"
-        >
-            <Link
-                href={"/postfeed"}
-            >
-                <Button
-                    className="hidden md:block"
-                    variant="ghost"
-                >
-                    Post Feed
-                </Button>
-            </Link>
-            <Popover>
-                <PopoverTrigger
-                    className="outline-none focus:outline-none rounded-full p-1 cursor-pointer"
-                >
-                    <BellIcon size={24} />
-                </PopoverTrigger>
-                <PopoverContent
-                    className="relative w-96 h-96 border-none"
-                >
-                    <div
-                        className="w-full flex items-center justify-between px-3 "
-                    >
-                        <span className="dark:text-white">Notifications</span>
-                        <Button
-                            className="hover:bg-black/10"
-                            variant="ghost"
-                        >
-                            <Settings2Icon size={24} className="" />
-                        </Button>
-                    </div>
-                    <Separator />
-                    <ScrollArea
-                        className="mt-4 w-full h-4/5"
-                    >
-                        <div
-                            className="flex flex-col items-center justify-center"
-                        >
-                            <span className="">No notifications</span>
-                        </div>
-                    </ScrollArea>
-                </PopoverContent>
-            </Popover>
-            <ThemeToggle />
-            <DropdownMenu>
-                <DropdownMenuTrigger
-                    className="outline-none focus:outline-none"
-                >
-                    <div
-                        className="flex items-center justify-between cursor-pointer rounded-full md:rounded-md px-2 py-1 hover:bg-black/10 transition-all ease-in-out duration-300"
-                    >
-                        <Avatar
-                            className="w-8 h-8 mr-2"
-                        >
-                            <AvatarImage
-                                src="https://avatars.githubusercontent.com/u/73750430?v=4"
-                            />
-                            <AvatarFallback>SP</AvatarFallback>
-                        </Avatar>
-                        {!isMobileOrTablet && <span>Salim</span>}
-                    </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                    className="relative px-3 py-2 top-4 border-none"
-                >
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                        {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
-                        <Link href={`/profile`}>
-                            Profile
-                        </Link>
-                    </DropdownMenuItem>
-                    {isAdmin && <DropdownMenuItem>
-                        <Link href={`/admin`}>
-                            Admin
-                        </Link>
-                    </DropdownMenuItem>}
-                    <DropdownMenuItem>
-                        <Link href={`/settings`}>
-                            Settings
-                        </Link>
-                    </DropdownMenuItem>
-                    <Separator className="w-full my-2" />
-                    <DropdownMenuItem
-                        className="p-0 m-0 bg-transparent hover:bg-transparent"
-                    >
-                        <AuthShowcase />
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-
-            {isMobileOrTablet && <Button
-                className="transition-all ease-in-out duration-1000"
-                variant="ghost"
-                onClick={() => setOpen(!open)}
-            >
-                {!open ? <SidebarOpen size={24} /> : <SidebarClose size={24} />}
-            </Button>}
-        </div>
+  const color = document.body.classList.contains("dark") ? "dark" : "light";
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
+  return (
+    <header className="fixed left-0 top-0 flex h-16 w-full items-center justify-between bg-white px-3 shadow-md duration-300 ease-in-out dark:bg-black">
+      <div className="flex justify-center items-center gap-2">
+        <MessageCircleIcon size={32} />
+        <span className="font-bold text-xl inline">feedback</span>
+      </div>
+      <div className="flex w-full items-center justify-center gap-2 md:justify-end">
+        <PostFeedback />
+        <ThemeToggle />
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <BellRingIcon size={24} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-full">
+            <Notifications />
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <UserDropDown />
+        <SidebarButton open={open} setOpen={setOpen} />
+      </div>
     </header>
-}
+  );
+};
 
-export default Header
+export default Header;

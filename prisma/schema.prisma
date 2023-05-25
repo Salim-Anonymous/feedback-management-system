@@ -42,40 +42,53 @@ enum VoteType {
   DOWNVOTE
 }
 
-enum ImageType {
-  FEEDBACK
-  COMMENT
+enum FileType {
+  IMAGE
+  VIDEO
+  AUDIO
+  OTHER
 }
 
 // models
 model Feedback {
-  id          String               @id @default(cuid())
-  number      BigInt               @unique @default(autoincrement())
+  id          String         @id @default(cuid())
+  number      BigInt         @unique @default(autoincrement())
   subject     String
-  description String?
-  status      FeedbackStatus       @default(OPEN)
-  author      User?                @relation(fields: [authorId], references: [id])
+  description String?        @db.LongText
+  status      FeedbackStatus @default(OPEN)
+  author      User?          @relation(fields: [authorId], references: [id])
   authorId    String?
-  visibility  Visibility           @default(ANONYMOUS)
+  visibility  Visibility     @default(ANONYMOUS)
   comments    Comment[]
   reports     Report[]
   votes       Vote[]
   likes       Like[]
-  image       Image[]
-  category    CategoryOnFeedback[]
-  createdAt   DateTime             @default(now())
+  files       Files[]
+  createdAt   DateTime       @default(now())
   flaggedAt   DateTime?
   closedAt    DateTime?
+  category    Category[]
 }
 
-model CategoryOnFeedback {
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  description String?    @db.LongText
+  moderator   User?      @relation(fields: [moderatorId], references: [id])
+  moderatorId String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  feedbacks   Feedback[]
+}
+
+model Report {
+  id         String   @id @default(cuid())
+  message    String   @db.LongText
+  author     User?    @relation(fields: [authorId], references: [id])
+  authorId   String?
   feedback   Feedback @relation(fields: [feedbackId], references: [id])
   feedbackId String
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String
-  assignedAt DateTime @default(now())
-
-  @@id([feedbackId, categoryId])
+  createdAt  DateTime @default(now())
 }
 
 model Vote {
@@ -89,19 +102,18 @@ model Vote {
 }
 
 model Like {
+  id         String   @id @default(cuid())
   author     User     @relation(fields: [authorId], references: [id])
   authorId   String
   feedback   Feedback @relation(fields: [feedbackId], references: [id])
   feedbackId String
   createdAt  DateTime @default(now())
-
-  @@id([authorId, feedbackId])
 }
 
 model Comment {
   id         String     @id @default(cuid())
-  message    String?
-  image      Image[]
+  message    String?    @db.LongText
+  files      Files[]
   author     User?      @relation(fields: [authorId], references: [id])
   authorId   String?
   feedback   Feedback   @relation(fields: [feedbackId], references: [id])
@@ -110,43 +122,20 @@ model Comment {
   createdAt  DateTime   @default(now())
 }
 
-model Report {
-  id         String   @id @default(cuid())
-  message    String?
-  author     User?    @relation(fields: [authorId], references: [id])
-  authorId   String?
-  feedback   Feedback @relation(fields: [feedbackId], references: [id])
-  feedbackId String
-  createdAt  DateTime @default(now())
-}
-
-model Image {
-  id         String    @id @default(cuid())
-  url        String
-  type       ImageType
-  comment    Comment?  @relation(fields: [commentId], references: [id])
-  commentId  String?
-  createdAt  DateTime  @default(now())
-  feedback   Feedback? @relation(fields: [feedbackId], references: [id])
-  feedbackId String?
-}
-
-model Category {
-  id          String               @id @default(cuid())
-  name        String
-  description String?
-  moderator   User?                @relation(fields: [moderatorId], references: [id])
-  moderatorId String?
-  feedbacks   CategoryOnFeedback[]
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
+model Files {
+  id        String     @id @default(cuid())
+  url       String      @db.MediumText
+  feedbacks Feedback[]
+  comments  Comment[]
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  message   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  message     String
+  recipient   User     @relation(fields: [recipientId], references: [id])
+  recipientId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // Necessary for Next auth
@@ -177,12 +166,12 @@ model Session {
 }
 
 model User {
-  id            String      @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?     @unique
+  email         String?        @unique
   emailVerified DateTime?
-  role          Role        @default(USER)
-  status        USER_STATUS @default(ACTIVE)
+  role          Role           @default(USER)
+  status        USER_STATUS    @default(ACTIVE)
   image         String?
   accounts      Account[]
   sessions      Session[]
@@ -192,6 +181,17 @@ model User {
   votes         Vote[]
   likes         Like[]
   categories    Category[]
+  Notification  Notification[]
+  Settings      Settings[]
+}
+
+model Settings {
+  id            String   @id @default(cuid())
+  notifications Boolean  @default(true)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model VerificationToken {

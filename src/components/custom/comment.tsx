@@ -1,81 +1,59 @@
-import { Airplay, PlaneIcon, PlusCircleIcon, SendIcon } from "lucide-react";
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { ScrollArea } from "../ui/scroll-area";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { MessageCircle } from "lucide-react";
-import { Separator } from "../ui/separator";
+import moment from "moment/moment";
+import { api } from "@/utils/api";
 
-type CommentsProps = {
-    id: string;
-}
+type CommentProps = {
+  avatar?: string;
+  name?: string | null;
+  time: Date;
+  message: string | null;
+  authorId?: string | null;
+};
+const Comment: React.FC<CommentProps> = ({
+  avatar = "https://www.redditstatic.com/avatars/avatar_default_02_0079D3.png",
+  name = "Anonymous",
+  time,
+  message,
+  authorId,
+}) => {
+  if (authorId != null) {
+    const { data: author } = api.user.getUser.useQuery({ userId: authorId });
+    if (author != null) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      avatar = author.image;
+      name = author.name;
+    }
+  }
+  return (
+    <>
+      <img src={avatar} alt="avatar" className="h-8 w-8 rounded-full" />
+      <div className="flex w-full flex-col gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-sm font-semibold">{name}</p>
+          <p className="text-xs text-gray-400">
+            {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              Date.now() - time < 86400000
+                ? moment(time).fromNow()
+                : moment(time).format("DD/MM/YYYY")
+            }
+          </p>
+        </div>
+        <p className="break-words text-sm">
+          {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            message.length <= 100
+              ? message
+              : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                message.slice(0, 100) + "..."
+          }
+        </p>
+      </div>
+    </>
+  );
+};
 
-const CommentsDialog: React.FC<CommentsProps> = ({ id }) => {
-    return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button
-                    className="flex flex-row w-1/2 items-center justify-center gap-2"
-                >
-                    <MessageCircle
-                        className="w-4 h-4"
-                    />
-                    <p
-                        className="text-xs"
-                    >
-                        1.2k comments
-                    </p>
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <ScrollArea className="h-full gap-2">
-                    <DialogHeader
-                        className="my-2"
-                    >Comments</DialogHeader>
-                    <Separator orientation="horizontal" />
-                    <div className="flex flex-col gap-2 py-4">
-                        <div
-                            className="flex flex-row items-center justify-between gap-2"
-                        >
-                            <img src="https://www.redditstatic.com/avatars/avatar_default_02_0079D3.png" alt="avatar" className="w-8 h-8 rounded-full" />
-                            <div className="flex flex-col gap-2 w-full">
-                                <div className="flex flex-row items-center justify-between gap-2">
-                                    <p className="text-sm font-semibold">Surya Narendran</p>
-                                    <p className="text-xs text-gray-400">2 hours ago</p>
-                                </div>
-                                <p className="text-sm">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.</p>
-                            </div>
-                        </div>
-                    </div>
-                </ScrollArea>
-                <DialogFooter>
-                    <div
-                        className="flex w-full items-start justify-start gap-2"
-                    >
-                        <Textarea
-                            className="w-2/3 h-12"
-                            placeholder="Add a comment"
-                        />
-                        <Button
-                            className="flex flex-row items-center justify-center gap-2"
-                        >
-                            <SendIcon
-                                className="w-4 h-4"
-                            />
-                            <p
-                                className="text-xs"
-                            >
-                                comment
-                            </p>
-                        </Button>
-                    </div>
-
-                </DialogFooter>
-            </DialogContent>
-        </Dialog >
-    );
-}
-
-export default CommentsDialog;
+export default Comment;

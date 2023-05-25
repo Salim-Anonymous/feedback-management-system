@@ -1,9 +1,8 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
-
-import { api } from "@/utils/api";
 import Image from "next/image";
+import React from "react";
 
 const Home: NextPage = (_props) => {
   const { status } = useSession();
@@ -19,14 +18,12 @@ const Home: NextPage = (_props) => {
         <meta name="description" content="Getting stated" />
         <link rel="icon" href="/fav.png" />
       </Head>
-      <main id="bgcst" className="flex min-h-screen px-3 flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container rounded-xl bg-black/30 backdrop-filter backdrop-blur-sm flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <Image
-            src="/whitelogo.svg"
-            alt="logo"
-            width={700}
-            height={200}
-          />
+      <main
+        id="bgcst"
+        className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] px-3"
+      >
+        <div className="container flex flex-col items-center justify-center gap-12 rounded-xl bg-black/30 px-4 py-16 backdrop-blur-sm backdrop-filter ">
+          <Image src="/whitelogo.svg" alt="logo" width={700} height={200} />
           <div className="flex flex-col items-center gap-2">
             <AuthShowcase />
           </div>
