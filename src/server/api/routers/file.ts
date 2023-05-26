@@ -10,7 +10,7 @@ export const fileRouter = createTRPCRouter({
       return await prisma.files.findMany({
         where: {
           feedbacks: {
-            every: {
+            some: {
               id: input.id,
             },
           },

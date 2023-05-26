@@ -68,7 +68,8 @@ const PostFeedback: NextPage = () => {
   const createFeedback = api.feedback.create.useMutation({
     onSuccess: () => {
       form.reset();
-      setFiles([]);
+      files.length = 0;
+      setFiles(files);
       void ctx.feedback.getAll.invalidate();
       setOpen(false);
     },
@@ -98,22 +99,25 @@ const PostFeedback: NextPage = () => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
+      <DialogTrigger
+        className="w-full my-4 "
+      >
         <Button
-          className="fixed bottom-4 right-4 lg:bottom-8 lg:right-8"
-          >
+          className="w-full dark:border-[#6D5D6E] dark:hover:bg-[#6D5D6E] dark:text-white dark:hover:text-white dark:hover:border-[#6D5D6E]"
+          variant={"outline"}
+        >
           <MessageSquarePlusIcon size={24} />
           <span className="ml-2">Post Feedback</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-screen w-[600px] max-w-full">
+      <DialogContent className="h-screen w-[600px] mx-2 max-w-full">
         <Form {...form}>
           <DialogHeader className="h-1/5">
             <DialogTitle>Create Feedback</DialogTitle>
           </DialogHeader>
           {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <ScrollArea className="h-[68%] lg:h-[85%] px-6">
+            <ScrollArea className="h-[68%] lg:h-[80%] px-6">
               <FormField
                 name={"subject"}
                 control={form.control}

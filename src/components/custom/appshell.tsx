@@ -20,7 +20,7 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
     <div className="min-h-screen w-full">
       {/** content */}
       <main
-      className="flex min-h-screen w-full flex-col pt-20 lg:pl-72">
+      className="flex min-h-screen w-full flex-col pt-20 lg:pl-72 dark:bg-[#6D5D6E]">
         <ScrollArea className="h-full w-full px-2 lg:pl-4">
           <div className="flex flex-col justify-start items-start">{children}</div>
         </ScrollArea>

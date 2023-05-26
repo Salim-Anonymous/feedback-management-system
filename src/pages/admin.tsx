@@ -78,11 +78,11 @@ const Admin: NextPage = () => {
    * **/
   return (
     <AppShell>
-      <div className="flex flex-col items-start justify-start">
+      <div className="flex flex-col items-center justify-start">
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
         {/* @ts-ignore*/}
-        <DataTable columns={columns} data={data} />
         <CategoryDialog />
+        <DataTable columns={columns} data={data} />
       </div>
     </AppShell>
   );

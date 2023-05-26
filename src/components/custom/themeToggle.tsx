@@ -15,9 +15,9 @@ const ThemeToggle = () => {
                 // @ts-ignore
                 setTheme(theme === 'light' ? 'dark' : 'light')}
             }
-            className='px-1 py-2 text-sm font-medium'
+            className='px-1 py-2 text-lg font-medium'
         >
-            {theme !== 'light' ? "🌙 dark" : "☀️ light"}
+            {theme !== 'light' ? "🌙 Dark" : "☀️ Light"}
         </SwitchMod>
     </div>
   )

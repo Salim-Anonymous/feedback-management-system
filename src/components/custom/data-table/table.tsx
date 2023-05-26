@@ -56,7 +56,9 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div>
+    <div
+      className="w-[320px] sm:w-[425px] md:w-[500px] lg:w-[700px] xl:w-[900px] 2xl:w-[1100px]"
+    >
       <div className="rounded-md border">
       <Table>
         <TableHeader>
@@ -124,7 +126,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end space-x-2 py-4 mx-4">
+      <div className="flex items-center justify-center space-x-2 py-4 mx-4">
         <Button
           variant="outline"
           size="sm"

@@ -24,7 +24,7 @@ export default function UserDropDown() {
   return (
     <DropdownMenu>
           <DropdownMenuTrigger className="outline-none focus:outline-none">
-            <div className="flex cursor-pointer items-center justify-between rounded-full px-2 py-1 transition-all duration-300 ease-in-out hover:bg-black/10 md:rounded-md">
+            <div className="flex cursor-pointer items-center justify-between rounded-full p-1 transition-all duration-300 ease-in-out hover:bg-black/10 md:rounded-md">
               <Avatar className="mr-2 h-8 w-8">
                 {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
                 {/* @ts-ignore */}
@@ -41,15 +41,15 @@ export default function UserDropDown() {
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
-              <Link href={`/profile`}>Profile</Link>
+              <Link className='w-full' href={`/profile`}>Profile</Link>
             </DropdownMenuItem>
             {isAdmin && (
               <DropdownMenuItem>
-                <Link href={`/admin`}>Admin</Link>
+                <Link className='w-full' href={`/admin`}>Admin</Link>
               </DropdownMenuItem>
             )}
             <DropdownMenuItem>
-              <Link href={`/settings`}>Settings</Link>
+              <Link className='w-full' href={`/settings`}>Settings</Link>
             </DropdownMenuItem>
             <Separator className="my-2 w-full" />
             <DropdownMenuItem className="m-0 bg-transparent p-0 hover:bg-transparent">

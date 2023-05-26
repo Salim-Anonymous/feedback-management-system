@@ -8,6 +8,7 @@ import Vote from "@/components/custom/vote";
 import moment from "moment";
 import { Skeleton } from "../ui/skeleton";
 import type Feedback from "@/types/feedback";
+import ReportsModal from "./reportModal";
 
 const Post = ({
   avatar = "",
@@ -32,13 +33,10 @@ const Post = ({
   const { data: files, isLoading: fileLoading } = api.file.getFile.useQuery({id: id});
   const { data: likes } = api.like.getLikeCountForFeedback.useQuery({feedbackId: id});
   const { data: liked } = api.like.checkIfUserHasLiked.useQuery({ feedbackId: id, userId: uuid });
-  const { data: flagged } = api.report.checkIfUserHasReportedFeedback.useQuery({ feedbackId: id, userId: uuid });
-  const {data:flags} = api.report.getFeedbackReportCount.useQuery({feedbackId: id});
   const like = api.like.likeOrUnlike.useMutation({onSuccess: () => {
       void ctx.like.getLikeCountForFeedback.refetch()
       void ctx.like.checkIfUserHasLiked.refetch()},
   });
-  
 
   return (
     <div className="border-1 my-4 flex w-full flex-col items-start justify-start rounded-xl border border-gray-400 px-4 py-4 shadow-md dark:bg-black/50 dark:text-white md:w-2/3">
@@ -83,7 +81,7 @@ const Post = ({
         <div
           className={`grid gap-x-0 ${
             files?.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"
-          }`}
+          } gap-4`}
         >
           {/* eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access */}
           {files?.map((file) => (
@@ -92,8 +90,8 @@ const Post = ({
               src={file?.url}
               alt="random"
               priority
-              width={500}
-              height={500}
+              width={300}
+              height={300}
               className="rounded-xl"
             />
           ))}
@@ -113,18 +111,11 @@ const Post = ({
             {likes?.count}
           </p>
         </div>
-        <div
-          className={`flex w-full flex-row items-center justify-center gap-2
-            ${flagged ? "text-blue-500" : "text-gray-400"}`}
-          onClick={() => {console.log(flags?.count)}}
-        >
-          <FlagIcon className="h-4 w-4" />
-          <p className="text-sm">
-            {
-              flags?.count
-            }
-          </p>
-        </div>
+        <ReportsModal
+          id={id}
+          uuid={uuid}
+          authorId={authorId}
+        />
       </div>
       <div className="my-4 flex w-full flex-row items-center justify-evenly gap-2">
         <CommentsModal id={id} />

@@ -20,6 +20,27 @@ export const feedbackRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { prisma } = ctx;
+      if (input.visibility === "ANONYMOUS") {
+        const [feedback] = await prisma.$transaction([
+          prisma.files.createMany({
+            data: input.files,
+          }),
+          prisma.feedback.create({
+            data: {
+              subject: input.subject,
+              description: input.description,
+              visibility: input.visibility,
+              category: {
+                connect: input.categoryIds.map((id) => ({ id })),
+              },
+              files: {
+                connect: input.files.map((file) => ({ id: file.id })),
+              },
+            },
+          }),
+        ]);
+        return feedback;
+      }
       const [feedback] = await prisma.$transaction([
         prisma.files.createMany({
           data: input.files,

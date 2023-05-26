@@ -3,12 +3,9 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React from "react";
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -31,7 +28,7 @@ const ProfilePage = () => {
             <div className="flex flex-col items-center justify-center w-full mb-32">
                 <Card className={cn("w-full md:w-1/2 dark:bg-slate-800 dark:text-white dark:border-gray-200")}>
                     <CardHeader>
-                        <CardTitle>user details</CardTitle>
+                        <CardTitle>Bio</CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                         <div className=" flex items-center space-x-4 rounded-md border p-4 dark:border-gray-200">

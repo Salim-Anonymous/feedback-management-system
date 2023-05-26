@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { useState } from "react"
+import { ScrollArea } from "../ui/scroll-area"
 
 const notifications = [
   {
@@ -33,10 +34,10 @@ export function Notifications({ className, ...props }: CardProps) {
 
     const [notifOn, setNotifOn] = useState(false);
   return (
-    <Card className={cn("w-full dark:bg-slate-900 dark:text-white", className)} {...props}>
+    <Card className={cn("w-full dark:bg-slate-900 dark:text-white border-none shadow-none", className)} {...props}>
       <CardHeader>
         <CardTitle
-            className={cn("text-xl")}
+            className={cn("text-sm")}
         >Notifications</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
@@ -55,7 +56,10 @@ export function Notifications({ className, ...props }: CardProps) {
             checked={notifOn}
           />
         </div>
-        <div>
+        <ScrollArea>
+        <div
+            className={cn("h-32")}
+        >
           {notifications.map((notification, index) => (
             <div
               key={index}
@@ -73,6 +77,7 @@ export function Notifications({ className, ...props }: CardProps) {
             </div>
           ))}
         </div>
+        </ScrollArea>
       </CardContent>
       <CardFooter>
         <Button className="w-full">

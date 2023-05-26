@@ -8,6 +8,7 @@ import { useMediaQuery } from "react-responsive";
 import Link from "next/link";
 import { api } from "@/utils/api";
 import { Skeleton } from "../ui/skeleton";
+import PostFeedback from "./create-post";
 
 const Sidebar = ({
   open,
@@ -20,12 +21,12 @@ const Sidebar = ({
 
   const links = [
     {
-      name: "Newsfeed",
+      name: "New",
       href: "/feeds",
       icon: <NewspaperIcon size={24} className="mr-2 inline" />,
     },
     {
-      name: "Hot",
+      name: "Trending",
       href: "/hot",
       icon: <FlameIcon size={24} className="mr-2 inline" />,
     },
@@ -34,7 +35,7 @@ const Sidebar = ({
   const { data: categories, isLoading:categoriesLoading } = api.category.getAll.useQuery();
   return (
     <aside
-      className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col items-start justify-start border border-l-black bg-white px-6 py-6 transition-all duration-300 ease-in-out dark:bg-black/90 dark:text-white lg:z-0 lg:pt-20 ${
+      className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col items-start justify-start border border-l-black bg-white px-6 py-6 transition-all duration-300 ease-in-out dark:bg-[#4F4557] dark:text-white lg:z-0 lg:pt-20 ${
         open ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -44,12 +45,15 @@ const Sidebar = ({
           className="mb-4 flex w-full justify-start whitespace-nowrap text-sm font-semibold"
           onClick={() => setOpen(false)}
         >
-          <SidebarClose size={12} className="mr-2 inline" />
+          <SidebarClose size={20} className="mr-2 inline" />
           Close
         </Button>
       )}
+      <PostFeedback />
       {links.map((link, index) => (
-        <Link href={link.href} key={index}>
+        <Link 
+          className="w-full"
+        href={link.href} key={index}>
           <Button
             key={index}
             variant={"ghost"}

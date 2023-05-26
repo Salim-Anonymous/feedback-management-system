@@ -64,12 +64,26 @@ export const reportRouter = createTRPCRouter({
     .input(z.object({ feedbackId: z.string(), userId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { prisma } = ctx;
-      const count:number =  await prisma.report.count({
+      const count =  await prisma.report.findFirst({
         where: {
           feedbackId: input.feedbackId,
           authorId: input.userId,
         },
       });
-      return count>1;
+      return {
+        hasReported: count !== null,
+      };
+    }),
+    createReport: protectedProcedure
+    .input(z.object({ feedbackId: z.string(), userId: z.string(), message: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { prisma } = ctx;
+      return await prisma.report.create({
+        data: {
+          feedbackId: input.feedbackId,
+          authorId: input.userId,
+          message: input.message,
+        },
+      });
     }),
 });
