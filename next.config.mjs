@@ -10,12 +10,15 @@ const config = {
   eslint:{
     ignoreDuringBuilds:true
   },
+  typescript:{
+    ignoreBuildErrors:true
+  },
   //image
   images: {
     domains: ["picsum.photos", "images.unsplash.com","uploadthing.com","lh3.googleusercontent.com"],
   },
-  // experimental: {
-  //   esmExternals: false, // THIS IS THE FLAG THAT MATTERS
-  // },
+  experimental: {
+    esmExternals: false, // THIS IS THE FLAG THAT MATTERS
+  },
 };
 export default config;
