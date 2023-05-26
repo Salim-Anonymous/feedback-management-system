@@ -54,7 +54,7 @@ model Feedback {
   id          String         @id @default(cuid())
   number      BigInt         @unique @default(autoincrement())
   subject     String
-  description String?        @db.LongText
+  description String?        @db.VarChar(5000)
   status      FeedbackStatus @default(OPEN)
   author      User?          @relation(fields: [authorId], references: [id])
   authorId    String?
@@ -73,7 +73,7 @@ model Feedback {
 model Category {
   id          String     @id @default(cuid())
   name        String
-  description String?    @db.LongText
+  description String?    @db.VarChar(300)
   moderator   User?      @relation(fields: [moderatorId], references: [id])
   moderatorId String?
   createdAt   DateTime   @default(now())
@@ -83,7 +83,7 @@ model Category {
 
 model Report {
   id         String   @id @default(cuid())
-  message    String   @db.LongText
+  message    String   @db.VarChar(5000)
   author     User?    @relation(fields: [authorId], references: [id])
   authorId   String?
   feedback   Feedback @relation(fields: [feedbackId], references: [id])
@@ -112,7 +112,7 @@ model Like {
 
 model Comment {
   id         String     @id @default(cuid())
-  message    String?    @db.LongText
+  message    String?    @db.VarChar(500)
   files      Files[]
   author     User?      @relation(fields: [authorId], references: [id])
   authorId   String?
@@ -124,7 +124,7 @@ model Comment {
 
 model Files {
   id        String     @id @default(cuid())
-  url       String      @db.LongText
+  url       String      @db.VarChar(500)
   feedbacks Feedback[]
   comments  Comment[]
 }
