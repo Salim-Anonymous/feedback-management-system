@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { api } from "@/utils/api";
+import ModeratorEdit from "../moderator-edit-dialog";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -90,7 +91,7 @@ export function DataTable<TData, TValue>({
                 {row.getVisibleCells().map((cell,index) => {
                   if (index === 0) {
                     return (
-                      <TableCell 
+                      <TableCell
                         key={cell.id}
                         className="text-center"
                       >
@@ -104,7 +105,7 @@ export function DataTable<TData, TValue>({
                 })}
                 <TableCell>
                   <div className="flex justify-center space-x-2">
-                    <Button variant="secondary">Edit</Button>
+                    <ModeratorEdit categoryId={row.original.id}/>
                     <Button variant="destructive" onClick={() => {
                       deleteCategory.mutate({
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

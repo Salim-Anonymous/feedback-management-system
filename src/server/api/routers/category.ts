@@ -68,10 +68,21 @@ export const categoryRouter = createTRPCRouter({
       return await prisma.category.findMany({
         where: {
           feedbacks: {
-            every: {
+            some: {
               id: feedbackId,
             },
           },
+        },
+      });
+    }),
+    getCategoryById: publicProcedure
+    .input(z.object({ categoryId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { prisma } = ctx;
+      const { categoryId } = input;
+      return await prisma.category.findUnique({
+        where: {
+          id: categoryId,
         },
       });
     }),

@@ -1,3 +1,11 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import React from "react";
@@ -25,68 +33,84 @@ import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-
-type CommentsProps = {
-  id?: string;
-};
+import { Textarea } from "../ui/textarea";
 
 const CategoryFormSchema = z.object({
   category: z.string({
     required_error: "Please enter a category name.",
   }),
-  moderator: z.string({
+  moderatorId: z.string({
     required_error: "Please select a moderator.",
   }),
-  moderatorId: z.string({
+  description: z.string({
+    required_error: "Please enter a description.",
+  }),
+  moderator: z.string({
     required_error: "Please select a moderator.",
   }),
 });
 
-const CategoryDialog: React.FC<CommentsProps> = ({}) => {
+export default function ModeratorEdit({ categoryId }: { categoryId: string }) {
   const ctx = api.useContext();
-  const { data: users } = api.user.getAll.useQuery({ text: "" });
-  const form = useForm<z.infer<typeof CategoryFormSchema>>({
-    resolver: zodResolver(CategoryFormSchema),
-  });
-
-  const createcategory = api.category.createCategory.useMutation({
+  const updatecategory = api.category.updateCategory.useMutation({
     onSuccess: () => {
       void ctx.category.getAll.invalidate();
     },
   });
-
+  const { data: users } = api.user.getAll.useQuery({ text: "" });
+  const { data: categoryDetails } = api.category.getCategoryById.useQuery({
+    categoryId: categoryId,
+  });
+  const form = useForm<z.infer<typeof CategoryFormSchema>>({
+    resolver: zodResolver(CategoryFormSchema),
+    defaultValues: {
+        category: categoryDetails?.name,
+        moderatorId: categoryDetails?.moderatorId,
+        description: categoryDetails?.description,
+        moderator: users?.filter((user) => user.id === categoryDetails?.moderatorId)[0]?.name,
+    },
+  });
   function onSubmit(data: z.infer<typeof CategoryFormSchema>) {
-    createcategory.mutate({
+    console.log(data);
+    updatecategory.mutate({
+      categoryId: categoryId,
       name: data.category,
       moderatorId: data.moderatorId,
+      description: data.description,
     });
+    // clean
     form.reset();
   }
-
   return (
-    <div className="my-10 flex flex-col border p-6">
-      <h1>Add Categories</h1>
-      <div className="flex flex-col">
+    <Dialog>
+      <DialogTrigger>
+        <Button variant="outline" className="">
+          Edit
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit Moderator</DialogTitle>
+        </DialogHeader>
         <Form {...form}>
-          {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+           {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Input
-                    {...field}
-                    placeholder="Enter a category name"
-                    defaultValue={""}
-                  />
-                </FormItem>
-              )}
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                        <FormLabel>Description</FormLabel>
+                        <Textarea
+                            {...field}
+                            className="w-full"
+                        />
+                    </FormItem>
+                )}
             />
             <FormField
               control={form.control}
-              name="moderator"
+              name="moderatorId"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Moderator</FormLabel>
@@ -144,12 +168,10 @@ const CategoryDialog: React.FC<CommentsProps> = ({}) => {
                 </FormItem>
               )}
             />
-            <Button type="submit">Add</Button>
+          <Button type="submit">Save</Button>
           </form>
         </Form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
-};
-
-export default CategoryDialog;
+}

@@ -1,4 +1,4 @@
-import { FlagIcon, HeartIcon } from "lucide-react";
+import { HeartIcon, Trash2Icon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Separator } from "../ui/separator";
 import Image from "next/image";
@@ -9,6 +9,8 @@ import moment from "moment";
 import { Skeleton } from "../ui/skeleton";
 import type Feedback from "@/types/feedback";
 import ReportsModal from "./reportModal";
+import { useSession } from "next-auth/react";
+import { Button } from "../ui/button";
 
 const Post = ({
   avatar = "",
@@ -33,10 +35,15 @@ const Post = ({
   const { data: files, isLoading: fileLoading } = api.file.getFile.useQuery({id: id});
   const { data: likes } = api.like.getLikeCountForFeedback.useQuery({feedbackId: id});
   const { data: liked } = api.like.checkIfUserHasLiked.useQuery({ feedbackId: id, userId: uuid });
+  const {data:category} = api.category.getAllCategoriesOfFeedback.useQuery({feedbackId: id});
   const like = api.like.likeOrUnlike.useMutation({onSuccess: () => {
       void ctx.like.getLikeCountForFeedback.refetch()
       void ctx.like.checkIfUserHasLiked.refetch()},
   });
+  const deleteFeedback = api.feedback.delete.useMutation({onSuccess: () => {
+      void ctx.feedback.getAll.invalidate()},
+  });
+  const { data:session, status:userstate } = useSession();
 
   return (
     <div className="border-1 my-4 flex w-full flex-col items-start justify-start rounded-xl border border-gray-400 px-4 py-4 shadow-md dark:bg-black/50 dark:text-white md:w-2/3">
@@ -54,12 +61,23 @@ const Post = ({
               <p className="text-sm font-semibold">{name}</p>
               <p className="flex gap-4 text-sm">
                 #{number.toString()}
-                {status === "OPEN" ? (
-                  <span className="text-green-500">Open</span>
-                ) : (
-                  <span className="text-red-500">Closed</span>
-                )}
+                {
+                category?.map((cat) => (
+                  <span
+                    key={cat.id}
+                    className="text-sm font-semibold"
+                    >
+                      #{cat.name}
+                    </span>
+                ))
+              }
               </p>
+              <div
+                className="flex flex-row items-center justify-start gap-2"
+              >
+              
+              </div>
+              
             </div>
         </div>
         <div>
@@ -119,6 +137,19 @@ const Post = ({
       </div>
       <div className="my-4 flex w-full flex-row items-center justify-evenly gap-2">
         <CommentsModal id={id} />
+        {userstate === "authenticated" && session?.user?.role === "ADMIN" && (
+            <Button
+            variant={"outline"}
+            title="Are you sure?"
+          className="flex items-center justify-center gap-2 text-red-500"
+          onClick={() => {
+            void deleteFeedback.mutate({ id: id });
+          }}
+        >
+          <Trash2Icon className="h-4 w-4" />
+          <p className="text-sm">Delete</p>
+        </Button>
+          )}
       </div>
     </div>
   );

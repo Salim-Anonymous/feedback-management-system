@@ -26,9 +26,7 @@ export const ourFileRouter = {
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
       await new Promise((resolve) => setTimeout(resolve, 10));
-      console.log("Upload complete for userId:", metadata);
-      console.log("file url", file.url, file.name);
     }),
-} satisfies FileRouter;
+};
 
 export type OurFileRouter = typeof ourFileRouter;

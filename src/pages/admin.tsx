@@ -8,6 +8,7 @@ import { DataTable } from "@/components/custom/data-table/table";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
+import InitialPageLoading from "@/components/custom/inital-page-loading";
 
 type CategoryData = {
   id: string;
@@ -51,7 +52,7 @@ const columns: ColumnDef<CategoryData>[] = [
 ];
 
 const Admin: NextPage = () => {
-  const { data: session } = useSession();
+  const { data: session,status } = useSession();
   if (session?.user?.role !== "ADMIN") {
     return (
       <AppShell>
@@ -78,11 +79,11 @@ const Admin: NextPage = () => {
    * **/
   return (
     <AppShell>
-      <div className="flex flex-col items-center justify-start">
+      <div className="flex flex-col w-full items-center justify-center">
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
         {/* @ts-ignore*/}
-        <CategoryDialog />
         <DataTable columns={columns} data={data} />
+        <CategoryDialog />
       </div>
     </AppShell>
   );

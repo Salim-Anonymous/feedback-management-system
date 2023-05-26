@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import {
+  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
@@ -88,5 +89,22 @@ export const feedbackRouter = createTRPCRouter({
       });
       return filtered;
     }),
-
+    delete: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { prisma } = ctx;
+      const [likes,feedback] = await prisma.$transaction([
+        prisma.like.deleteMany({
+          where: {
+            feedbackId: input.id,
+          },
+        }),
+        prisma.feedback.delete({
+          where: {
+            id: input.id,
+          },
+        }),
+      ]);
+      return feedback;
+    }),
 });
